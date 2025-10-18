@@ -4,9 +4,10 @@ version = 4
 
 [[package]]
 name = "droppable-pin"
-version = "0.1.0-rc2"
+version = "0.1.0"
 dependencies = [
  "futures-util",
+ "maybe-dangling",
  "paste",
 ]
 
@@ -46,6 +47,12 @@ dependencies = [
  "pin-utils",
  "slab",
 ]
+
+[[package]]
+name = "maybe-dangling"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "59dbb09ed53f8e4f314e353dc6c1853ae5b4c480a668a422657804a544ea9f65"
 
 [[package]]
 name = "paste"

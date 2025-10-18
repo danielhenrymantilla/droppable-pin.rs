@@ -287,7 +287,11 @@ macro_rules! droppable_pin {(
     )+
 ) => (
     $(
-        let mut hygiene_private_pinned_value = $value;
+        // Note: safety-invariants-wise, `MaybeDangling<T>` and `T` are equivalent (they only
+        // differ in a subtle *validity* invariant aspect). Consider this to be an 100% transparent
+        // wrapper around `T`, whose only impact is for `Pin::new_unchecked()` to require a
+        // `DerefMut` call.
+        let mut hygiene_private_pinned_value = $crate::ඞ::maybe_dangling::MaybeDangling::new($value);
 
         #[allow(unused_mut)]
         let mut $var = if true {
@@ -341,7 +345,7 @@ macro_rules! droppable_pin {(
             //         borrow, so as to give it a proper, re-usable, lifetime (since the "previous"
             //         one got invalidated upon drop/set).
             unsafe {
-                $crate::ඞ::core::pin::Pin::new_unchecked(&mut hygiene_private_pinned_value)
+                $crate::ඞ::core::pin::Pin::new_unchecked(&mut *hygiene_private_pinned_value)
             }
         } else {
             // Dead-code branch so as to enforce that the otherwise merely syntactical/decorative
@@ -362,27 +366,37 @@ macro_rules! droppable_pin {(
                 // `drop($var)` (unnecessary, just here for nicer UX. Using 1-tuple for clippy.)
                 _ = ($var, );
 
-                // SAFETY: see safety comment around `let mut $var` declaration.
-                unsafe {
-                    // 1. Drop it in-place so as to abide by the `Pin` contract.
-                    (&raw mut hygiene_private_pinned_value).drop_in_place();
-                }
-                // 2. Tag the binding itself as empty/exhausted for dropck to be aware of it, but
-                //    without double-dropping the value.
+                $crate::ඞ::maybe_dangling::drop_in_place!(hygiene_private_pinned_value);
+                // This is why `MaybeDangling` was used. Not only does it offer *exactly* our
+                // desired binding-consuming `drop_in_place`-to-abide-by-`Pin` API, but it also does
+                // so:
+                //   - guarding against unwind-safety (_i.e., what if said drop were to panic; here
+                //     the process would be aborted);
+                //   - preventing an aliasing validity invariant violation in case
+                //     `hygiene_private_pinned_value` contained a `noalias` type such as `&mut`.
                 //
-                // Note: this could be deemed to run into aliasing woes (the one *validity*
-                // invariant breakable by drop). We will need to use `MaybeDangling` around our
-                // value.
-                $crate::ඞ::core::mem::forget(hygiene_private_pinned_value);
+                // Morally, and papering over those "details", what this `drop_in_place!()` macro
+                // does is otherwise just:
+
+                /*
+                    // SAFETY: see safety comment around `let mut $var` declaration.
+                    unsafe {
+                        // 1. Drop it in-place so as to abide by the `Pin` contract.
+                        (&raw mut hygiene_private_pinned_value).drop_in_place();
+                    }
+                    // 2. Tag the binding itself as empty/exhausted for dropck to be aware of it, but
+                    //    without double-dropping the value.
+                    $crate::ඞ::core::mem::forget(hygiene_private_pinned_value);
+                */
             )}
 
             /// The exact shape of this name is not part of the public API!
             #[allow(unused)]
             macro_rules! [< missing_droppable_pin_around_var_declaration_ඞpinset_ $var >] {( $new_value:expr ) => (
-                hygiene_private_pinned_value = $new_value;
+                hygiene_private_pinned_value = $crate::ඞ::maybe_dangling::MaybeDangling::new($new_value);
                 // SAFETY: see safety comment around `let mut $var` declaration.
                 $var = unsafe {
-                    $crate::ඞ::core::pin::Pin::new_unchecked(&mut hygiene_private_pinned_value)
+                    $crate::ඞ::core::pin::Pin::new_unchecked(&mut *hygiene_private_pinned_value)
                 };
             )}
 
@@ -416,9 +430,7 @@ macro_rules! pin_drop {( $var:ident $(,)? ) => (
 ///
 /// [Pin::set]: [`::core::pin::Pin::set()`]
 #[macro_export]
-macro_rules! pin_set {(
-    $var:ident, $value:expr $(,)?
-) => (
+macro_rules! pin_set {( $var:ident, $value:expr $(,)? ) => (
     $crate::ඞ::check_var_stems_from_droppable_pin!($var);
     $crate::ඞ::paste! {
         [< missing_droppable_pin_around_var_declaration_ඞpinset_ $var >]!( $value );
@@ -429,6 +441,7 @@ macro_rules! pin_set {(
 #[doc(hidden)] /** Not part of the public API */ pub
 mod ඞ {
     pub use ::core; // or `std`
+    pub use ::maybe_dangling;
     pub use ::paste::paste;
     #[doc(inline)]
     pub use crate::ඞcheck_var_stems_from_droppable_pin as check_var_stems_from_droppable_pin;
