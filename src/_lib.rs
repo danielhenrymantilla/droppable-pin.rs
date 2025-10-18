@@ -4,6 +4,12 @@
 #![doc = include_str!("../README.md")]
 #![no_std]
 #![allow(unused_braces)]
+// Base image sourced from Disney's The Lion King, used under fair use.
+#![doc(html_logo_url = "\
+    https://github.com/danielhenrymantilla/droppable-pin.rs/blob/\
+    72bfcfec4e7499eed9fedbc79e8941fed722387e\
+    /assets/droppable_pin_logo.jpg?raw=true\
+")]
 
 /// Invoke this macro around a given `let [mut] var = pin!()` declaration to allow invoking
 /// [`pin_drop!`] and [`pin_set!`] on the given `var`, which have in turn been designed to avoid

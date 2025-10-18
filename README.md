@@ -27,6 +27,19 @@ https://github.com/danielhenrymantilla/droppable-pin.rs/actions)
 [![no_std compatible](https://img.shields.io/badge/no__std-compatible-success.svg)](
 https://github.com/rust-secure-code/safety-dance/)
 
+<span style="text-align: center;">
+
+<img
+    width="800"
+    alt="just some flair around *dropping* pins, and dropping Mufasa from the Lion King"
+    title="Base image sourced from Disney's The Lion King, used under fair use."
+    src="https://github.com/danielhenrymantilla/droppable-pin.rs/blob/d54afff0f9abbb1cf3d04d949c3a127c061f069c/assets/droppable_pin.jpg?raw=true"
+/>
+
+</span>
+
+---
+
 <!-- Templated by `cargo-generate` using https://github.com/danielhenrymantilla/proc-macro-template -->
 
 ## Example
