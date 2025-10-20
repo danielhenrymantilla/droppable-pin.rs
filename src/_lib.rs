@@ -294,7 +294,7 @@ macro_rules! droppable_pin {(
         let mut hygiene_private_pinned_value = $crate::ඞ::maybe_dangling::MaybeDangling::new($value);
 
         #[allow(unused_mut)]
-        let mut $var = if true {
+        let mut $var $(: $T)? = if true {
             // SAFETY:
             //
             // `hygiene_private_pinned_value`, as indicated by its name, is hygiene-private
