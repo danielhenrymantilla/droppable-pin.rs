@@ -355,7 +355,15 @@ macro_rules! droppable_pin {(
             // it, hence why this check happens in an `unreachable_code` branch.
             #[allow(unreachable_code)] {
                 loop {}
-                $($(if $leading)? ::)? $($pin_macro)::+ ! { $value }
+                if true {
+                    $($(if $leading)? ::)? $($pin_macro)::+ ! { $value }
+                } else {
+                    // Note: the user may have imported their own `pin!` macro.
+                    // The stdlib macro comes with extra safeties guarding against unwanted
+                    // coërcions (see #3 or https://github.com/rust-lang/rust/issues/153438).
+                    // So let's call the stdlib as well just in case
+                    $crate::ඞ::core::pin::pin! { $value }
+                }
             }
         };
 
