@@ -7,7 +7,7 @@ name = "droppable-pin"
 authors = [
     "Daniel Henry-Mantilla <daniel.henry.mantilla@gmail.com>",
 ]
-version = "0.1.1"  # Keep in sync
+version = "0.1.2"  # Keep in sync
 edition = "2024"
 rust-version = "1.85.0"
 

@@ -52,7 +52,7 @@ jobs:
         env:
           RUSTC_BOOTSTRAP: 1
 
-      # - run: cargo test-ui
-      #   if: matrix.rust-toolchain != '1.85.0'
-      #   env:
-      #     RUSTC_BOOTSTRAP: 1
+      - run: cargo test-ui
+        if: matrix.rust-toolchain != '1.85.0'
+        env:
+          RUSTC_BOOTSTRAP: 1
