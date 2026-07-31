@@ -4,11 +4,11 @@ docs-rs = [
     "doc", "--no-deps", "--open",
     "--features", "docs-rs",
 ]
-# test-ui = [
-#     "test", "--doc",
-#     "--features", "ui-tests",
-#     "--", "--nocapture", "--test-threads", "1",
-# ]
+test-ui = [
+    "test", "--doc",
+    "--features", "ui-tests",
+    "--", "--nocapture", "--test-threads", "1",
+]
 
 [build]
 rustdocflags = [

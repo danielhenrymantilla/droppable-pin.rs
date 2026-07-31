@@ -83,34 +83,33 @@ jobs:
         env:
           RUSTC_BOOTSTRAP: 1
 
-  # # == UI TESTS ==
-  # ui-test:
-  #   name: UI Tests
-  #   runs-on: ubuntu-latest
-  #   needs: [check]
-  #   steps:
-  #     - name: Install Rust toolchain
-  #       uses: dtolnay/rust-toolchain@stable
-  #       id: installed_toolchain
-  #
-  #     - name: Override toolchain just in case.
-  #       run: rustup override set ${{ steps.installed_toolchain.outputs.name }}
-  #
-  #     - name: Clone repo
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Cargo UI test
-  #       run: cargo test-ui
-  #       env:
-  #         RUSTC_BOOTSTRAP: 1
-  #       with:
-  #         command: test-ui
+  # == UI TESTS ==
+  ui-test:
+    name: UI Tests
+    runs-on: ubuntu-latest
+    needs: [check]
+    steps:
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        id: installed_toolchain
+
+      - name: Override toolchain just in case.
+        run: rustup override set ${{ steps.installed_toolchain.outputs.name }}
+
+      - name: Clone repo
+        uses: actions/checkout@v4
+
+      - name: Cargo UI test
+        run: cargo test-ui
+        env:
+          RUSTC_BOOTSTRAP: 1
 
   required-jobs:
     name: 'All the required jobs'
     needs:
       - check
       - test
+      - ui-test
     runs-on: ubuntu-latest
     if: ${{ always() }}
     steps:
